@@ -20,26 +20,7 @@ tf_ds = {
     'validation':create_ds("data/validation",image_size=find_max_image_size("data/validation"))
     }
 
-# for k in tf_ds:
-#     dir_path = os.path.join('data',k)
-#     print(tf_ds)
-#     print(dir_path)
 
-#     tf_ds[k] = create_ds(dir_path,image_size=find_max_image_size(dir_path))
-
-## create training dataset
-
-## for each directory
-# dataset = tf.keras.utils.image_dataset_from_directory(
-#     files_path,
-#     batch_size = 32,
-#     image_size = find_max_image_size(files_path),
-#     shuffle = True,
-#     pad_to_aspect_ratio = True,
-#     seed = 123,
-#     labels = 'inferred',
-#     label_mode = 'int',
-#     interpolation = 'bilinear')
 
 print(tf_ds)
 
@@ -77,14 +58,22 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(2)
 ])
 
-model.compile(
-    optimizer='adam',
-    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-    metrics=['accuracy'])
+# model.compile(
+#     optimizer='adam',
+#     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+#     metrics=['accuracy'])
 
-history = model.fit(
-    tf_ds["train"],
-    validation_data = tf_ds['validation'],
-    epochs = 10)
+# history = model.fit(
+#     tf_ds["train"],
+#     validation_data = tf_ds['validation'],
+#     epochs = 10)
 
 print(model.summary())
+
+# shrink_and_save_image(
+#     old_image_path="data/test/1.jpg",
+#     new_image_path="temp/150.jpg"
+# )
+clean_temp_image_path(dir_path="data")
+shrink_all_images(dir_path="data")
+print(str(os.path.isdir("temp")))

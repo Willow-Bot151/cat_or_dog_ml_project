@@ -2,6 +2,7 @@ import os
 from PIL import Image, UnidentifiedImageError
 import tensorflow as tf
 import numpy as np
+from shutil import rmtree
 
 def count_files_in_dir(dir_path):
     count = 0
@@ -44,4 +45,43 @@ def create_ds(dir_path, image_size):
         interpolation = 'bilinear')
     return dataset
 
+def shrink_and_save_image(old_image_path, new_image_path, max_size = (150,150)):
+    image = Image.open(old_image_path)
+    image.thumbnail(max_size)
+    image.save(new_image_path)
 
+
+def clean_temp_image_path(dir_path):
+    if not os.path.exists("temp"):
+        os.mkdir("temp")
+    temp_image_path = os.path.join("temp",dir_path)
+    if os.path.exists(temp_image_path):
+        rmtree(temp_image_path)
+    # os.mkdir(temp_image_path)
+
+def shrink_all_images(dir_path, max_size = (150,150),target_parent_path = "temp"):
+    valid_image_suffix = [
+        ".jpeg",
+        ".png",
+        ".jpg"]
+    items_in_dir = os.listdir(dir_path)
+    if not items_in_dir:
+        return 
+    for item in items_in_dir:
+        if item.startswith(".") or item.startswith(".."):
+            pass
+        else:
+            for suffix in valid_image_suffix:
+                if os.path.join(dir_path,item).endswith(suffix):
+                    shrink_and_save_image(
+                        old_image_path=os.path.join(dir_path,item),
+                        new_image_path=os.path.join(target_parent_path,dir_path,item),
+                        max_size=max_size)
+            if os.path.isdir(os.path.join(dir_path,item)):
+                if not os.path.exists(os.path.join(target_parent_path,dir_path)):
+                    os.mkdir(os.path.join(target_parent_path,dir_path))
+                os.mkdir(os.path.join(target_parent_path,dir_path,item))
+                shrink_all_images(
+                    dir_path=os.path.join(dir_path,item),
+                    max_size=max_size,
+                    target_parent_path=target_parent_path)
